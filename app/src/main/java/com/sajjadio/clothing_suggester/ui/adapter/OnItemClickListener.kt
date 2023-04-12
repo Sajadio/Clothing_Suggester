@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 
 interface OnItemClickListener {
     fun getCurrentDayTemp(temp:Int)
-    fun onAddImage()
-    fun onRefreshSuggesterImage():Bitmap?
+    fun addImage()
+    fun refreshSuggesterImage():Bitmap?
+
+    fun addSelectedImage(bitmap: Bitmap)
 }

@@ -13,6 +13,7 @@ import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
 import android.widget.RadioButton
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.sajjadio.clothing_suggester.data.local.SharedPref
@@ -29,6 +30,9 @@ import com.sajjadio.clothing_suggester.ui.adapter.OnItemClickListener
 import com.sajjadio.clothing_suggester.ui.adapter.ParentAdapter
 import com.sajjadio.clothing_suggester.utils.ParentItem
 import com.vmadalin.easypermissions.EasyPermissions
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.InputStream
 
 class HomeActivity : AppCompatActivity(), WeatherView, OnItemClickListener {
 
@@ -132,18 +136,42 @@ class HomeActivity : AppCompatActivity(), WeatherView, OnItemClickListener {
     private val photoResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-                result.data!!.data?.let { getPhotoResultIntent(it) }
+                result.data!!.clipData?.let {
+                    val count = it.itemCount
+                    for (i in 0 until count) {
+                        saveImageToSharedPref(it.getItemAt(i).uri)
+                    }
+                }
             }
         }
 
     @SuppressLint("Recycle")
-    private fun getPhotoResultIntent(imageUri: Uri) {
-        val inputStream = contentResolver.openInputStream(imageUri)
-        val imageBytes = inputStream?.readBytes()
-        val encodedImageString = Base64.encodeToString(imageBytes, Base64.DEFAULT)
-        val images = Pair(selectedWeatherStatus, encodedImageString.toString())
-        sharedPref.addImage(images)
+    private fun saveImageToSharedPref(imageUri: Uri) {
+        val images = Pair(selectedWeatherStatus, encodeImageAsBase64(imageUri).toString())
+        sharedPref.saveImage(images)
     }
+
+    @SuppressLint("Recycle")
+    fun encodeImageAsBase64(uri: Uri): String? {
+        var inputStream: InputStream? = null
+        var encodedImageString: String? = null
+        try {
+            inputStream = contentResolver.openInputStream(uri)
+            val imageBytes = inputStream?.readBytes()
+            encodedImageString = Base64.encodeToString(imageBytes, Base64.DEFAULT)
+        } catch (e: IOException) {
+            Log.d(TAG, "readImageBytes: ${e.message}")
+        } finally {
+            inputStream?.close()
+        }
+        return encodedImageString
+    }
+
+    private fun decodeBase64ToBitmap(encodedImage: String): Bitmap? {
+        val imageBytes = Base64.decode(encodedImage, Base64.DEFAULT)
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+    }
+
 
     private fun requestReadExternalStoragePermission(): Boolean {
         val permission = Manifest.permission.READ_EXTERNAL_STORAGE
@@ -161,7 +189,8 @@ class HomeActivity : AppCompatActivity(), WeatherView, OnItemClickListener {
     }
 
     private fun pickPhoto() {
-        Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also {
+        Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also {
+            it.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             it.type = "image/*"
             photoResultLauncher.launch(it)
         }
@@ -171,14 +200,35 @@ class HomeActivity : AppCompatActivity(), WeatherView, OnItemClickListener {
         checkWeatherStatus(temp)
     }
 
-    override fun onAddImage() {
+    override fun addImage() {
         showFilterSheet()
     }
 
-    override fun onRefreshSuggesterImage(): Bitmap? {
-        val encodedImageString = sharedPref.getImage(weatherStatus)?.random()
-        val imageBytes = Base64.decode(encodedImageString, Base64.DEFAULT)
-        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+    private var listBitmap = mutableListOf<Bitmap>()
+    override fun refreshSuggesterImage(): Bitmap? {
+        val images = sharedPref.getImage(weatherStatus)
+        if (images.isNotEmpty()) {
+            sharedPref.getImage(weatherStatus).map { decodeBase64ToBitmap(it) }.forEach {
+                it?.let {
+                    listBitmap.add(it)
+                }
+            }
+            val selectedImage = sharedPref.getSelectedImage(bitmapToString(listBitmap.random()))
+            listBitmap.remove(decodeBase64ToBitmap(selectedImage))
+            return listBitmap.random()
+        }
+        return null
     }
 
+    override fun addSelectedImage(bitmap: Bitmap) {
+        sharedPref.saveSelectedImage(bitmapToString(bitmap))
+        Toast.makeText(this, "Selected", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun bitmapToString(bitmap: Bitmap): String {
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+        val b = baos.toByteArray()
+        return Base64.encodeToString(b, Base64.DEFAULT)
+    }
 }

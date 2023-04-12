@@ -12,9 +12,9 @@ class SharedPrefImpl(
         private const val CLOTHS_PREF = "cloths pref"
     }
 
-    override fun addImage(images: Pair<String, String>) {
-        val oldValue = getImage(images.first)
-        oldValue?.add(images.second)
+    override fun saveImage(images: Pair<String, String>) {
+        val oldValue = getImage(images.first).toMutableSet()
+        oldValue.add(images.second)
         prefs.edit().apply {
             putStringSet(images.first, oldValue)
             apply()
@@ -22,8 +22,17 @@ class SharedPrefImpl(
     }
 
 
-    override fun getImage(key: String): MutableSet<String>? {
-        return prefs.getStringSet(key, emptySet())?.toMutableSet()
+    override fun getImage(key: String): List<String> {
+        return prefs.getStringSet(key, emptySet())?.toMutableSet()?.toList() ?: emptyList()
     }
+
+    override fun saveSelectedImage(value: String) {
+        prefs.edit().apply {
+            putString(value, value)
+            apply()
+        }
+    }
+
+    override fun getSelectedImage(key: String) = prefs.getString(key, "") ?: ""
 
 }

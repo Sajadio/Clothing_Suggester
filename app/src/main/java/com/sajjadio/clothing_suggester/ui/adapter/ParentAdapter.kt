@@ -80,21 +80,22 @@ class ParentAdapter(
                 textViewMinTemp.text = "${weather.main.temp_min.getCelsiusTemperature()}°"
                 textViewDescriptionWeather.text = weather.weather.first().main
                 listener.getCurrentDayTemp(temp)
-                setupSuggesterImage(listener.onRefreshSuggesterImage())
+                setupSuggesterImage(listener.refreshSuggesterImage())
                 buttonAddImage.setOnClickListener {
-                    listener.onAddImage()
+                    listener.addImage()
                 }
                 buttonRefreshSuggesterImage.setOnClickListener {
-                    setupSuggesterImage(listener.onRefreshSuggesterImage())
+                    setupSuggesterImage(listener.refreshSuggesterImage())
                 }
             }
         }
 
         private fun setupSuggesterImage(bitmap: Bitmap?) {
-            with(binding.imageViewCloths){
-            bitmap?.let {
-               setImageBitmap(it)
-            } ?: R.drawable.ic_launcher_background
+            with(binding.imageViewCloths) {
+                bitmap?.let {
+                    setOnClickListener { listener.addSelectedImage(bitmap) }
+                    setImageBitmap(it)
+                } ?: R.drawable.ic_launcher_background
             }
         }
     }
