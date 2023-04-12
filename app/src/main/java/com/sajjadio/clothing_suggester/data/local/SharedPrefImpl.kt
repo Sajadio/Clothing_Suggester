@@ -21,6 +21,7 @@ class SharedPrefImpl(
         }
     }
 
+
     override fun getImage(key: String): MutableSet<String>? {
         return prefs.getStringSet(key, emptySet())?.toMutableSet()
     }

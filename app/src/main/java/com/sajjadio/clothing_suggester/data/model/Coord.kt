@@ -1,4 +1,4 @@
-package com.sajjadio.clothing_suggester.domain.model
+package com.sajjadio.clothing_suggester.data.model
 
 data class Coord(
     val lat: Double,

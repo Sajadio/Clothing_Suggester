@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
@@ -12,24 +13,24 @@ import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
 import android.widget.RadioButton
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.net.toUri
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.sajjadio.clothing_suggester.data.RepositoryImpl
 import com.sajjadio.clothing_suggester.data.local.SharedPref
 import com.sajjadio.clothing_suggester.data.local.SharedPrefImpl
+import com.sajjadio.clothing_suggester.data.model.Daily
+import com.sajjadio.clothing_suggester.data.model.WeatherResponse
 import com.sajjadio.clothing_suggester.data.remote.ApiServiceImpl
-import com.sajjadio.clothingsuggester.domain.Repository
 import com.sajjadio.clothing_suggester.data.remote.ApiService
-import com.sajjadio.clothing_suggester.domain.model.WeatherResponse
 import com.sajjadio.clothing_suggester.ui.presenter.WeatherPresenter
 import com.sajjadio.clothing_suggester.ui.presenter.WeatherView
 import com.sajjadio.clothing_suggester.databinding.ActivityHomeBinding
-import com.sajjadio.clothing_suggester.databinding.ImageBottomSheetBinding
+import com.sajjadio.clothing_suggester.databinding.WeatherStatusBottomSheetBinding
+import com.sajjadio.clothing_suggester.ui.adapter.OnItemClickListener
+import com.sajjadio.clothing_suggester.ui.adapter.ParentAdapter
+import com.sajjadio.clothing_suggester.utils.ParentItem
 import com.vmadalin.easypermissions.EasyPermissions
 
-class HomeActivity : AppCompatActivity(), WeatherView {
+class HomeActivity : AppCompatActivity(), WeatherView, OnItemClickListener {
 
     companion object {
         private const val GALLERY_REQUEST_CODE = 1001
@@ -45,11 +46,12 @@ class HomeActivity : AppCompatActivity(), WeatherView {
 
     private lateinit var binding: ActivityHomeBinding
     private lateinit var apiService: ApiService
-    private lateinit var repository: Repository
     private lateinit var presenter: WeatherPresenter
     private lateinit var sharedPref: SharedPref
     private lateinit var dialog: BottomSheetDialog
     private var selectedWeatherStatus = ""
+    private var weatherStatus = ""
+    private lateinit var adapter: ParentAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,15 +61,17 @@ class HomeActivity : AppCompatActivity(), WeatherView {
         initialInjection()
         sharedPref = SharedPrefImpl(applicationContext)
         requestReadExternalStoragePermission()
+        setupParentAdapter()
+    }
 
-        binding.buttonAddImage.setOnClickListener {
-            showFilterSheet()
-        }
+    private fun setupParentAdapter() {
+        adapter = ParentAdapter(this)
+        binding.recyclerViewParent.adapter = adapter
     }
 
 
     private fun showFilterSheet() {
-        val bottomSheetBinding = ImageBottomSheetBinding.inflate(layoutInflater)
+        val bottomSheetBinding = WeatherStatusBottomSheetBinding.inflate(layoutInflater)
         dialog = BottomSheetDialog(this)
 
         bottomSheetBinding.apply {
@@ -80,7 +84,7 @@ class HomeActivity : AppCompatActivity(), WeatherView {
         }
     }
 
-    private fun checkStatusRadioButton(imageBottomSheetBinding: ImageBottomSheetBinding) {
+    private fun checkStatusRadioButton(imageBottomSheetBinding: WeatherStatusBottomSheetBinding) {
         with(imageBottomSheetBinding) {
             radioGroup.setOnCheckedChangeListener { group, checkedId ->
                 val radioButton: RadioButton = group.findViewById(checkedId)
@@ -101,36 +105,29 @@ class HomeActivity : AppCompatActivity(), WeatherView {
 
     private fun initialInjection() {
         apiService = ApiServiceImpl()
-        repository = RepositoryImpl(apiService)
-        presenter = WeatherPresenter(this, repository)
-        presenter.getWeatherResponse()
+        presenter = WeatherPresenter(this, apiService)
+        presenter.getCurrentWeatherResponse()
     }
 
-    override fun getWeatherResponse(weatherResponse: WeatherResponse) {
-        val temp = weatherResponse.main.temp.minus(273).toInt()
+    override fun getCurrentWeatherResponse(weatherResponse: WeatherResponse) {
         runOnUiThread {
-            binding.textViewTemp.text = "$temp°"
+            adapter.addNestedItem(ParentItem.CurrentWeather(weatherResponse))
         }
-        checkWeatherStatus(temp)
+    }
+
+    override fun getDailyWeatherResponse(daysWeather: List<Daily>) {
+        runOnUiThread {
+            adapter.addNestedItem(ParentItem.DailyWeather(daysWeather))
+        }
     }
 
     private fun checkWeatherStatus(temp: Int) {
         when (temp) {
-            in rangeColdTemp -> displayImageDependOnWeatherStatus(COLD)
-            in rangeModerateTemp -> displayImageDependOnWeatherStatus(MODERATE)
-            in rangeHotTemp -> displayImageDependOnWeatherStatus(HOT)
+            in rangeColdTemp -> weatherStatus = COLD
+            in rangeModerateTemp -> weatherStatus = MODERATE
+            in rangeHotTemp -> weatherStatus = HOT
         }
     }
-
-    private fun displayImageDependOnWeatherStatus(weatherStatus: String) {
-        val encodedImageString = sharedPref.getImage(weatherStatus)?.random()
-        val imageBytes = Base64.decode(encodedImageString, Base64.DEFAULT)
-        val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-        runOnUiThread {
-            binding.imageViewCloths.setImageBitmap(bitmap)
-        }
-    }
-
 
     private val photoResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -168,6 +165,20 @@ class HomeActivity : AppCompatActivity(), WeatherView {
             it.type = "image/*"
             photoResultLauncher.launch(it)
         }
+    }
+
+    override fun getCurrentDayTemp(temp: Int) {
+        checkWeatherStatus(temp)
+    }
+
+    override fun onAddImage() {
+        showFilterSheet()
+    }
+
+    override fun onRefreshSuggesterImage(): Bitmap? {
+        val encodedImageString = sharedPref.getImage(weatherStatus)?.random()
+        val imageBytes = Base64.decode(encodedImageString, Base64.DEFAULT)
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
     }
 
 }

@@ -1,4 +1,4 @@
-package com.sajjadio.clothing_suggester.domain.model
+package com.sajjadio.clothing_suggester.data.model
 
 data class WeatherResponse(
     val base: String,
@@ -13,5 +13,6 @@ data class WeatherResponse(
     val timezone: String,
     val visibility: Int,
     val weather: List<Weather>,
+    val daily: List<Daily>,
     val wind: Wind
 )

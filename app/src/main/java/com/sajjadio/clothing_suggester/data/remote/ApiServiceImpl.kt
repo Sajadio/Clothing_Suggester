@@ -2,22 +2,30 @@ package com.sajjadio.clothing_suggester.data.remote
 
 import android.util.Log
 import com.google.gson.Gson
-import com.sajjadio.clothing_suggester.domain.model.WeatherResponse
+import com.sajjadio.clothing_suggester.data.model.WeatherResponse
 import okhttp3.*
 import java.io.IOException
 
 class ApiServiceImpl : ApiService {
 
-    private companion object {
-        const val TAG = "sajjadio"
-        const val API_KEY = "8a28304434cc3379ceb50bfe875b6602"
-        const val LATITUDE = "30.5128"
-        const val LONGITUDE = "47.8132"
-    }
+    private val client = OkHttpClient()
 
     override fun getWeatherResponse(function: (WeatherResponse) -> Unit) {
         val client = OkHttpClient()
         val request = buildWeatherRequest()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.d(TAG, "onFailure: ${e.message}")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                handleWeatherResponse(response, function)
+            }
+        })
+    }
+
+    override fun getDailyWeatherResponse(function: (WeatherResponse) -> Unit) {
+        val request = buildDailyWeatherRequest()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 Log.d(TAG, "onFailure: ${e.message}")
@@ -45,6 +53,11 @@ class ApiServiceImpl : ApiService {
         return buildRequest(url)
     }
 
+    private fun buildDailyWeatherRequest(): Request {
+        val url = buildDailyWeatherUrl()
+        return buildRequest(url)
+    }
+
     private fun buildWeatherUrl(): HttpUrl {
         return HttpUrl.Builder()
             .scheme("https")
@@ -56,10 +69,30 @@ class ApiServiceImpl : ApiService {
             .build()
     }
 
+    private fun buildDailyWeatherUrl(): HttpUrl {
+        return HttpUrl.Builder()
+            .scheme("https")
+            .host("api.openweathermap.org")
+            .addPathSegments("data/2.5/onecall")
+            .addQueryParameter("appid", API_KEY)
+            .addQueryParameter("lat", LATITUDE)
+            .addQueryParameter("lon", LONGITUDE)
+            .addQueryParameter("hourly", EXCLUDE)
+            .build()
+    }
+
     private fun buildRequest(url: HttpUrl): Request {
         return Request.Builder()
             .url(url)
             .build()
+    }
+
+    private companion object {
+        const val TAG = "sajjadio"
+        const val API_KEY = "8a28304434cc3379ceb50bfe875b6602"
+        const val LATITUDE = "30.5128"
+        const val LONGITUDE = "47.8132"
+        const val EXCLUDE = "hourly"
     }
 
 }

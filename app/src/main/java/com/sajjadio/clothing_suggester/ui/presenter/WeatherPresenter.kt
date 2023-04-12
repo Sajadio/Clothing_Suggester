@@ -1,15 +1,18 @@
 package com.sajjadio.clothing_suggester.ui.presenter
 
-import com.sajjadio.clothingsuggester.domain.Repository
+import com.sajjadio.clothing_suggester.data.remote.ApiService
 
 class WeatherPresenter(
     private val view: WeatherView,
-    private val repository: Repository
+    private val apiService: ApiService
     ) {
 
-    fun getWeatherResponse(){
-        repository.getWeatherResponse{ dailyWeather ->
-            view.getWeatherResponse(dailyWeather)
+    fun getCurrentWeatherResponse(){
+        apiService.getWeatherResponse{ response ->
+            view.getCurrentWeatherResponse(response)
+        }
+        apiService.getDailyWeatherResponse{ response ->
+            view.getDailyWeatherResponse(response.daily)
         }
     }
 }
