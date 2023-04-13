@@ -5,5 +5,5 @@ import android.graphics.Bitmap
 interface OnItemClickListener {
     fun getCurrentDayTemp(temp: Int)
     fun addImage()
-    fun refreshSuggesterImage(): Bitmap?
+    fun getRandomSuggestionImage(): Bitmap?
 }

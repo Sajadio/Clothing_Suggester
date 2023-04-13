@@ -36,7 +36,7 @@ fun String.mapStringToBitmap(): Bitmap? {
 }
 
 @SuppressLint("Recycle")
-fun Context.mapUriToString(uri: Uri): String? {
+fun Context.mapUriToString(uri: Uri): String {
     val inputStream = contentResolver.openInputStream(uri)
     val imageBytes = inputStream?.readBytes()
     return Base64.encodeToString(imageBytes, Base64.DEFAULT)

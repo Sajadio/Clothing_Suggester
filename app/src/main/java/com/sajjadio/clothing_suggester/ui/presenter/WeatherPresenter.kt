@@ -1,18 +1,26 @@
 package com.sajjadio.clothing_suggester.ui.presenter
 
+import com.sajjadio.clothing_suggester.data.local.SharedPref
 import com.sajjadio.clothing_suggester.data.remote.ApiService
 
 class WeatherPresenter(
     private val view: WeatherView,
-    private val apiService: ApiService
+    private val apiService: ApiService,
+    private val sharedPref: SharedPref
 ) {
 
-    fun getCurrentWeatherResponse() {
+    fun saveImage(images: Pair<String, String>) {
+        sharedPref.saveImage(images)
+    }
+    fun showImage(key: String) {
+        view.showImage(sharedPref.getImage(key))
+    }
+    fun loadData() {
         apiService.getWeatherResponse(::responseCurrentWeather) { response ->
-            view.getCurrentWeatherResponse(response)
+            view.loadDataCurrentWeatherResponse(response)
         }
         apiService.getDailyWeatherResponse(::responseDailyWeather) { response ->
-            view.getDailyWeatherResponse(response.daily)
+            view.loadDataDailyWeatherResponse(response.daily)
         }
     }
 

@@ -98,8 +98,8 @@ class ApiServiceImpl : ApiService {
     private companion object {
         const val TAG = "sajjadio"
         const val API_KEY = "8a28304434cc3379ceb50bfe875b6602"
-        const val LATITUDE = "30.5128"
-        const val LONGITUDE = "47.8132"
+        const val LATITUDE = "30.5257657"
+        const val LONGITUDE = "47.773797"
         const val EXCLUDE = "hourly"
     }
 

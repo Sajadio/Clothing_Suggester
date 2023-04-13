@@ -70,30 +70,36 @@ class ParentAdapter(
 
     inner class CurrentWeatherViewHolder(val binding: ItemCurrentWeatherBinding) :
         ParentViewHolder(binding) {
-        @SuppressLint("SetTextI18n")
         override fun bindItem(item: Any) {
             val weather = item as WeatherResponse
             val temp = weather.main.temp.getCelsiusTemperature()
             with(binding) {
-                textViewCity.text = weather.name
-                textViewTemp.text = "$temp°"
-                textViewMaxTemp.text = "${weather.main.temp_max.getCelsiusTemperature()}°"
-                textViewMinTemp.text = "${weather.main.temp_min.getCelsiusTemperature()}°"
-                textViewDescriptionWeather.text = weather.weather.first().main
-
-                weather.weather.forEach {
-                    val iconUrl = "https://openweathermap.org/img/wn/${it.icon}@2x.png"
-                    imageViewWeatherIcon.loadImage(iconUrl)
-                }
-
+                setupView(weather, temp)
                 listener.getCurrentDayTemp(temp)
-                setupSuggesterImage(listener.refreshSuggesterImage())
+                setupSuggesterImage(listener.getRandomSuggestionImage())
+                buttonRefreshSuggesterImage.setOnClickListener {
+                    setupSuggesterImage(listener.getRandomSuggestionImage())
+                }
                 buttonAddImage.setOnClickListener {
                     listener.addImage()
                 }
-                buttonRefreshSuggesterImage.setOnClickListener {
-                    setupSuggesterImage(listener.refreshSuggesterImage())
-                }
+            }
+        }
+
+        @SuppressLint("SetTextI18n")
+        private fun ItemCurrentWeatherBinding.setupView(
+            weather: WeatherResponse,
+            temp: Int
+        ) {
+            textViewCity.text = weather.name
+            textViewTemp.text = "$temp°"
+            textViewMaxTemp.text = "${weather.main.temp_max.getCelsiusTemperature()}°"
+            textViewMinTemp.text = "${weather.main.temp_min.getCelsiusTemperature()}°"
+            textViewDescriptionWeather.text = weather.weather.first().main
+
+            weather.weather.forEach {
+                val iconUrl = "https://openweathermap.org/img/wn/${it.icon}@2x.png"
+                imageViewWeatherIcon.loadImage(iconUrl)
             }
         }
 
@@ -101,12 +107,12 @@ class ParentAdapter(
             with(binding.imageViewCloths) {
                 bitmap?.let {
                     setImageBitmap(it)
-                } ?: setImageResource(R.drawable.ic_launcher_background)
+                } ?: setImageResource(R.drawable.outline_broken_image_24)
             }
         }
     }
 
-    inner class DailyWeatherViewHolder(val binding: ListDailyWeatherBinding) :
+    inner class DailyWeatherViewHolder(private val binding: ListDailyWeatherBinding) :
         ParentViewHolder(binding) {
         override fun bindItem(item: Any) {
             with(binding) {

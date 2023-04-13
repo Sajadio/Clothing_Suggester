@@ -7,4 +7,5 @@
     <string name="today">Today</string>
     <string name="according_to_the_temp_of_the_weather_i_suggest_you_wear">According to the temp of the weather, I suggest you wear</string>
     <string name="next_8_days">Next 8 days</string>
+    <string name="request_permission">Please grant the Read External Storage permission to access photos</string>
 </resources>
