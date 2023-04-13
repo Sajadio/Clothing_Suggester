@@ -10,26 +10,27 @@
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/_16dp"
         android:src="@drawable/line"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/text_view_today"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="@dimen/_16dp"
+        android:layout_marginTop="@dimen/_8dp"
         android:layout_weight="1"
         android:fontFamily="@font/poppins_semibold"
         android:gravity="center|start"
+        android:text="@string/today"
         android:textColor="@color/gray"
-        android:textSize="16sp"
+        android:textSize="@dimen/_16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
-        android:text="Today" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <TextView
         android:id="@+id/text_view_next_days"
@@ -39,12 +40,12 @@
         android:background="@drawable/ripple"
         android:fontFamily="@font/poppins_medium"
         android:gravity="center"
+        android:text="@string/next_8_days"
         android:textColor="@color/primary"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/text_view_today"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/text_view_today"
-        android:text="Next 7 days" />
+        app:layout_constraintTop_toTopOf="@+id/text_view_today" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_daily_weather"

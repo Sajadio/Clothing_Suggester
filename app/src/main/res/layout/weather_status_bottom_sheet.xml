@@ -13,21 +13,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/_16dp"
         android:src="@drawable/line" />
 
     <TextView
         android:id="@+id/text_view_today"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="@dimen/_16dp"
+        android:layout_marginTop="@dimen/_16dp"
         android:layout_weight="1"
         android:fontFamily="@font/poppins_semibold"
         android:gravity="center|start"
-        android:text="Choose image according to the temp weahter"
+        android:text="@string/choose_image_according_to_the_temp_weahter"
         android:textColor="@color/gray"
-        android:textSize="16sp"
+        android:textSize="@dimen/_18sdp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
@@ -41,33 +41,18 @@
 
         <RadioButton
             android:id="@+id/radio_button_cold"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/poppins_medium"
-            android:gravity="center|start"
-            android:text="Cold"
-            android:textColor="@color/gray"
-            android:textSize="14sp" />
+            style="@style/CommonRadioButton"
+            android:text="@string/cold" />
 
         <RadioButton
             android:id="@+id/radio_button_moderate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/poppins_medium"
-            android:gravity="center|start"
-            android:text="Moderate"
-            android:textColor="@color/gray"
-            android:textSize="14sp" />
+            style="@style/CommonRadioButton"
+            android:text="@string/moderate" />
 
         <RadioButton
             android:id="@+id/radio_button_hot"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/poppins_medium"
-            android:gravity="center|start"
-            android:text="Hot"
-            android:textColor="@color/gray"
-            android:textSize="14sp" />
+            style="@style/CommonRadioButton"
+            android:text="@string/hot" />
 
     </RadioGroup>
 </LinearLayout>

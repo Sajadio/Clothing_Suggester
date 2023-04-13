@@ -9,10 +9,7 @@
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/button_add_image"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/ripple"
+        style="@style/CommonClickButton"
         android:src="@drawable/ic_add"
         app:layout_constraintBottom_toBottomOf="@+id/text_view_description_weather"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,9 +17,7 @@
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/button_refresh_suggester_Image"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@drawable/ripple"
+        style="@style/CommonClickButton"
         android:src="@drawable/refresh"
         app:layout_constraintBottom_toBottomOf="@+id/text_view_description_weather"
         app:layout_constraintEnd_toStartOf="@+id/button_add_image"
@@ -32,12 +27,12 @@
         android:id="@+id/text_view_city"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginStart="@dimen/_16dp"
+        android:layout_marginTop="@dimen/_24dp"
         android:fontFamily="@font/poppins_semibold"
         android:gravity="center"
         android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textSize="@dimen/_18sdp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="City Name" />
@@ -46,25 +41,35 @@
         android:id="@+id/text_view_description_weather"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/poppins_medium"
+        android:layout_marginTop="@dimen/_8dp"
+        android:fontFamily="@font/poppins_semibold"
         android:gravity="center"
         android:textColor="@color/text_primary"
-        android:textSize="14sp"
+        android:textSize="@dimen/_16sp"
         app:layout_constraintStart_toStartOf="@+id/text_view_city"
         app:layout_constraintTop_toBottomOf="@+id/text_view_city"
         tools:text="Clouds" />
+
+    <ImageView
+        android:id="@+id/image_view_weather_icon"
+        android:layout_width="@dimen/_48dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/_8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/text_view_description_weather"
+        app:layout_constraintStart_toEndOf="@+id/text_view_description_weather"
+        app:layout_constraintTop_toTopOf="@+id/text_view_description_weather"
+        tools:src="@drawable/ic_launcher_background" />
 
     <TextView
         android:id="@+id/text_view_suggester_cloths"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/poppins_medium"
+        android:layout_marginTop="@dimen/_16dp"
+        android:fontFamily="@font/poppins_semibold"
         android:gravity="center|start"
-        android:text="According to the temp of the weather, I suggest you wear"
-        android:textColor="@color/text_secondary"
-        android:textSize="12sp"
+        android:text="@string/according_to_the_temp_of_the_weather_i_suggest_you_wear"
+        android:textColor="@color/text_primary"
+        android:textSize="@dimen/_12sdp"
         app:layout_constraintEnd_toStartOf="@+id/button_refresh_suggester_Image"
         app:layout_constraintStart_toStartOf="@+id/text_view_city"
         app:layout_constraintTop_toBottomOf="@+id/text_view_description_weather" />
@@ -72,72 +77,47 @@
     <androidx.constraintlayout.utils.widget.ImageFilterView
         android:id="@+id/image_view_cloths"
         android:layout_width="match_parent"
-        android:layout_height="386dp"
-        android:layout_marginHorizontal="55dp"
-        android:layout_marginTop="24dp"
+        android:layout_height="@dimen/_386dp"
+        android:layout_marginHorizontal="@dimen/_55dp"
+        android:layout_marginTop="8dp"
         android:scaleType="fitXY"
         app:layout_constraintTop_toBottomOf="@+id/text_view_suggester_cloths"
         app:roundPercent="0.1"
-        tools:layout_editor_absoluteX="16dp"
         tools:src="@drawable/r" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="70dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="@dimen/_8dp"
         android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/image_view_cloths"
+        app:layout_constraintStart_toStartOf="@+id/image_view_cloths"
         app:layout_constraintTop_toBottomOf="@+id/image_view_cloths">
 
         <TextView
             android:id="@+id/text_view_min_temp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_weight="1"
-            android:drawablePadding="4dp"
-            android:fontFamily="@font/poppins_medium"
-            android:gravity="center"
-            android:textColor="@color/text_primary"
-            android:textSize="16sp"
+            style="@style/CommonTextView"
             app:drawableStartCompat="@drawable/ic_bottom"
             app:drawableTint="@color/text_secondary"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_view_city"
             tools:text="18°" />
 
         <TextView
             android:id="@+id/text_view_temp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
             android:layout_weight="1"
             android:fontFamily="@font/poppins_semibold"
             android:gravity="center"
             android:textColor="@color/text_primary"
-            android:textSize="64sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:textSize="@dimen/_64sdp"
             tools:text="30°" />
 
         <TextView
             android:id="@+id/text_view_max_temp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawablePadding="4dp"
-            android:fontFamily="@font/poppins_medium"
-            android:gravity="center"
-            android:textColor="@color/text_primary"
-            android:textSize="16sp"
+            style="@style/CommonTextView"
             app:drawableStartCompat="@drawable/ic_top"
-            app:drawableTint="@color/text_secondary"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_view_city"
             tools:text="22°" />
 
     </LinearLayout>

@@ -10,7 +10,10 @@ class ApiServiceImpl : ApiService {
 
     private val client = OkHttpClient()
 
-    override fun getWeatherResponse(function: (WeatherResponse) -> Unit) {
+    override fun getWeatherResponse(
+        onSuccess: (Boolean) -> Unit,
+        function: (WeatherResponse) -> Unit
+    ) {
         val client = OkHttpClient()
         val request = buildWeatherRequest()
         client.newCall(request).enqueue(object : Callback {
@@ -19,12 +22,16 @@ class ApiServiceImpl : ApiService {
             }
 
             override fun onResponse(call: Call, response: Response) {
+                onSuccess(response.isSuccessful)
                 handleWeatherResponse(response, function)
             }
         })
     }
 
-    override fun getDailyWeatherResponse(function: (WeatherResponse) -> Unit) {
+    override fun getDailyWeatherResponse(
+        onSuccess: (Boolean) -> Unit,
+        function: (WeatherResponse) -> Unit
+    ) {
         val request = buildDailyWeatherRequest()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
@@ -32,6 +39,7 @@ class ApiServiceImpl : ApiService {
             }
 
             override fun onResponse(call: Call, response: Response) {
+                onSuccess(response.isSuccessful)
                 handleWeatherResponse(response, function)
             }
         })

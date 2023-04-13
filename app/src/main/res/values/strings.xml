@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Clothing_Suggester</string>
+    <string name="choose_image_according_to_the_temp_weahter">Choose image according to the temp weahter</string>
+    <string name="cold">Cold</string>
+    <string name="moderate">Moderate</string>
+    <string name="hot">Hot</string>
+    <string name="today">Today</string>
+    <string name="according_to_the_temp_of_the_weather_i_suggest_you_wear">According to the temp of the weather, I suggest you wear</string>
+    <string name="next_8_days">Next 8 days</string>
 </resources>

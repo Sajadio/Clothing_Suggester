@@ -1,5 +1,6 @@
 package com.sajjadio.clothing_suggester.ui.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -24,6 +25,7 @@ class DailyWeatherAdapter(
 
     override fun getItemCount() = items.size
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: DailyWeatherViewHolder, position: Int) {
         val daily = items[position]
         with(holder.binding) {

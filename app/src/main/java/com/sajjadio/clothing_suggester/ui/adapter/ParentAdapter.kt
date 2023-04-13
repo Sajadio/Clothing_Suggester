@@ -13,6 +13,7 @@ import com.sajjadio.clothing_suggester.databinding.ItemCurrentWeatherBinding
 import com.sajjadio.clothing_suggester.databinding.ListDailyWeatherBinding
 import com.sajjadio.clothing_suggester.utils.ParentItem
 import com.sajjadio.clothing_suggester.utils.getCelsiusTemperature
+import com.sajjadio.clothing_suggester.utils.loadImage
 
 class ParentAdapter(
     private val listener: OnItemClickListener
@@ -79,6 +80,12 @@ class ParentAdapter(
                 textViewMaxTemp.text = "${weather.main.temp_max.getCelsiusTemperature()}°"
                 textViewMinTemp.text = "${weather.main.temp_min.getCelsiusTemperature()}°"
                 textViewDescriptionWeather.text = weather.weather.first().main
+
+                weather.weather.forEach {
+                    val iconUrl = "https://openweathermap.org/img/wn/${it.icon}@2x.png"
+                    imageViewWeatherIcon.loadImage(iconUrl)
+                }
+
                 listener.getCurrentDayTemp(temp)
                 setupSuggesterImage(listener.refreshSuggesterImage())
                 buttonAddImage.setOnClickListener {
@@ -93,9 +100,8 @@ class ParentAdapter(
         private fun setupSuggesterImage(bitmap: Bitmap?) {
             with(binding.imageViewCloths) {
                 bitmap?.let {
-                    setOnClickListener { listener.addSelectedImage(bitmap) }
                     setImageBitmap(it)
-                } ?: R.drawable.ic_launcher_background
+                } ?: setImageResource(R.drawable.ic_launcher_background)
             }
         }
     }

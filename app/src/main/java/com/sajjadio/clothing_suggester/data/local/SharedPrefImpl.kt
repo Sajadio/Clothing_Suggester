@@ -25,14 +25,4 @@ class SharedPrefImpl(
     override fun getImage(key: String): List<String> {
         return prefs.getStringSet(key, emptySet())?.toMutableSet()?.toList() ?: emptyList()
     }
-
-    override fun saveSelectedImage(value: String) {
-        prefs.edit().apply {
-            putString(value, value)
-            apply()
-        }
-    }
-
-    override fun getSelectedImage(key: String) = prefs.getString(key, "") ?: ""
-
 }

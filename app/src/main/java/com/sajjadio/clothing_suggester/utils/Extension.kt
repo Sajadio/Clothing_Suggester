@@ -1,5 +1,11 @@
 package com.sajjadio.clothing_suggester.utils
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.util.Base64
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import java.text.SimpleDateFormat
@@ -14,7 +20,6 @@ fun Double.getCelsiusTemperature(): Int {
 }
 
 
-
 fun Long.getHourAndMinuteFromTimestamp(): String {
     val date = Date(this * 1000)
     val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -23,4 +28,16 @@ fun Long.getHourAndMinuteFromTimestamp(): String {
     val hour = timeParts[0]
     val minute = timeParts[1]
     return "$hour:$minute"
+}
+
+fun String.mapStringToBitmap(): Bitmap? {
+    val imageBytes = Base64.decode(this, Base64.DEFAULT)
+    return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+}
+
+@SuppressLint("Recycle")
+fun Context.mapUriToString(uri: Uri): String? {
+    val inputStream = contentResolver.openInputStream(uri)
+    val imageBytes = inputStream?.readBytes()
+    return Base64.encodeToString(imageBytes, Base64.DEFAULT)
 }

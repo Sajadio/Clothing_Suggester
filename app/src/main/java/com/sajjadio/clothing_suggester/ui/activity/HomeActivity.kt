@@ -5,16 +5,13 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Base64
-import android.util.Log
 import android.widget.RadioButton
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.sajjadio.clothing_suggester.data.local.SharedPref
 import com.sajjadio.clothing_suggester.data.local.SharedPrefImpl
@@ -29,10 +26,10 @@ import com.sajjadio.clothing_suggester.databinding.WeatherStatusBottomSheetBindi
 import com.sajjadio.clothing_suggester.ui.adapter.OnItemClickListener
 import com.sajjadio.clothing_suggester.ui.adapter.ParentAdapter
 import com.sajjadio.clothing_suggester.utils.ParentItem
+import com.sajjadio.clothing_suggester.utils.mapStringToBitmap
+import com.sajjadio.clothing_suggester.utils.mapUriToString
 import com.vmadalin.easypermissions.EasyPermissions
-import java.io.ByteArrayOutputStream
-import java.io.IOException
-import java.io.InputStream
+import java.util.*
 
 class HomeActivity : AppCompatActivity(), WeatherView, OnItemClickListener {
 
@@ -62,6 +59,16 @@ class HomeActivity : AppCompatActivity(), WeatherView, OnItemClickListener {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.swipeRefresh.apply {
+            isRefreshing = true
+            setOnRefreshListener {
+                setup()
+            }
+        }
+        setup()
+    }
+
+    private fun setup() {
         initialInjection()
         sharedPref = SharedPrefImpl(applicationContext)
         requestReadExternalStoragePermission()
@@ -125,6 +132,21 @@ class HomeActivity : AppCompatActivity(), WeatherView, OnItemClickListener {
         }
     }
 
+    override fun checkResponseCurrentWeather(isSuccess: Boolean) {
+        runOnUiThread {
+            binding.apply {
+                swipeRefresh.isRefreshing = !isSuccess
+                recyclerViewParent.isVisible = isSuccess
+            }
+        }
+    }
+
+    override fun checkResponseDailyWeather(isSuccess: Boolean) {
+        runOnUiThread {
+            binding.swipeRefresh.isRefreshing = !isSuccess
+        }
+    }
+
     private fun checkWeatherStatus(temp: Int) {
         when (temp) {
             in rangeColdTemp -> weatherStatus = COLD
@@ -147,31 +169,9 @@ class HomeActivity : AppCompatActivity(), WeatherView, OnItemClickListener {
 
     @SuppressLint("Recycle")
     private fun saveImageToSharedPref(imageUri: Uri) {
-        val images = Pair(selectedWeatherStatus, encodeImageAsBase64(imageUri).toString())
+        val images = Pair(selectedWeatherStatus, mapUriToString(imageUri).toString())
         sharedPref.saveImage(images)
     }
-
-    @SuppressLint("Recycle")
-    fun encodeImageAsBase64(uri: Uri): String? {
-        var inputStream: InputStream? = null
-        var encodedImageString: String? = null
-        try {
-            inputStream = contentResolver.openInputStream(uri)
-            val imageBytes = inputStream?.readBytes()
-            encodedImageString = Base64.encodeToString(imageBytes, Base64.DEFAULT)
-        } catch (e: IOException) {
-            Log.d(TAG, "readImageBytes: ${e.message}")
-        } finally {
-            inputStream?.close()
-        }
-        return encodedImageString
-    }
-
-    private fun decodeBase64ToBitmap(encodedImage: String): Bitmap? {
-        val imageBytes = Base64.decode(encodedImage, Base64.DEFAULT)
-        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-    }
-
 
     private fun requestReadExternalStoragePermission(): Boolean {
         val permission = Manifest.permission.READ_EXTERNAL_STORAGE
@@ -204,31 +204,10 @@ class HomeActivity : AppCompatActivity(), WeatherView, OnItemClickListener {
         showFilterSheet()
     }
 
-    private var listBitmap = mutableListOf<Bitmap>()
     override fun refreshSuggesterImage(): Bitmap? {
-        val images = sharedPref.getImage(weatherStatus)
-        if (images.isNotEmpty()) {
-            sharedPref.getImage(weatherStatus).map { decodeBase64ToBitmap(it) }.forEach {
-                it?.let {
-                    listBitmap.add(it)
-                }
-            }
-            val selectedImage = sharedPref.getSelectedImage(bitmapToString(listBitmap.random()))
-            listBitmap.remove(decodeBase64ToBitmap(selectedImage))
-            return listBitmap.random()
+        sharedPref.getImage(weatherStatus).filter { it.isNotEmpty() }.shuffled().forEach {
+            return it.mapStringToBitmap()
         }
         return null
-    }
-
-    override fun addSelectedImage(bitmap: Bitmap) {
-        sharedPref.saveSelectedImage(bitmapToString(bitmap))
-        Toast.makeText(this, "Selected", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun bitmapToString(bitmap: Bitmap): String {
-        val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
-        val b = baos.toByteArray()
-        return Base64.encodeToString(b, Base64.DEFAULT)
     }
 }
