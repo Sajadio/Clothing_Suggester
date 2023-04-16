@@ -190,6 +190,7 @@ class HomeActivity : AppCompatActivity(), WeatherView, OnItemClickListener {
         runOnUiThread {
             binding.swipeRefresh.isRefreshing = !isSuccess
         }
+
     }
 
     override fun getCurrentDayTemp(temp: Int) {

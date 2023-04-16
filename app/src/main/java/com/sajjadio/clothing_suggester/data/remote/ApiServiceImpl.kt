@@ -68,24 +68,24 @@ class ApiServiceImpl : ApiService {
 
     private fun buildWeatherUrl(): HttpUrl {
         return HttpUrl.Builder()
-            .scheme("https")
-            .host("api.openweathermap.org")
-            .addPathSegments("data/2.5/weather")
-            .addQueryParameter("appid", API_KEY)
-            .addQueryParameter("lat", LATITUDE)
-            .addQueryParameter("lon", LONGITUDE)
+            .scheme(SCHEME)
+            .host(HOST)
+            .addPathSegments(PATH_SEGMENTS_CURRENT)
+            .addQueryParameter(APP_ID, API_KEY)
+            .addQueryParameter(LAN, LATITUDE)
+            .addQueryParameter(LON, LONGITUDE)
             .build()
     }
 
     private fun buildDailyWeatherUrl(): HttpUrl {
         return HttpUrl.Builder()
-            .scheme("https")
-            .host("api.openweathermap.org")
-            .addPathSegments("data/2.5/onecall")
-            .addQueryParameter("appid", API_KEY)
-            .addQueryParameter("lat", LATITUDE)
-            .addQueryParameter("lon", LONGITUDE)
-            .addQueryParameter("hourly", EXCLUDE)
+            .scheme(SCHEME)
+            .host(HOST)
+            .addPathSegments(PATH_SEGMENTS_DAILY)
+            .addQueryParameter(APP_ID, API_KEY)
+            .addQueryParameter(LAN, LATITUDE)
+            .addQueryParameter(LON, LONGITUDE)
+            .addQueryParameter(HOURLY, EXCLUDE)
             .build()
     }
 
@@ -100,7 +100,15 @@ class ApiServiceImpl : ApiService {
         const val API_KEY = "8a28304434cc3379ceb50bfe875b6602"
         const val LATITUDE = "30.5257657"
         const val LONGITUDE = "47.773797"
+        const val LAN = "lat"
+        const val LON = "lot"
+        const val APP_ID = "lot"
         const val EXCLUDE = "hourly"
+        const val HOURLY = "hourly"
+        const val SCHEME = "scheme"
+        const val HOST = "api.openweathermap.org"
+        const val PATH_SEGMENTS_DAILY = "data/2.5/onecall"
+        const val PATH_SEGMENTS_CURRENT = "data/2.5/weather"
     }
 
 }

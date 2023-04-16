@@ -1,6 +1,7 @@
 package com.sajjadio.clothing_suggester.utils
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -8,6 +9,7 @@ import android.net.Uri
 import android.util.Base64
 import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.util.Util
 import java.text.SimpleDateFormat
 import java.util.*
 

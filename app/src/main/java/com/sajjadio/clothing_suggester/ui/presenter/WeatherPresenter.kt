@@ -12,9 +12,11 @@ class WeatherPresenter(
     fun saveImage(images: Pair<String, String>) {
         sharedPref.saveImage(images)
     }
+
     fun showImage(key: String) {
         view.showImage(sharedPref.getImage(key))
     }
+
     fun loadData() {
         apiService.getWeatherResponse(::responseCurrentWeather) { response ->
             view.loadDataCurrentWeatherResponse(response)
