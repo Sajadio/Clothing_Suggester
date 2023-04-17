@@ -26,6 +26,7 @@ import com.sajjadio.clothing_suggester.ui.adapter.ParentAdapter
 import com.sajjadio.clothing_suggester.utils.ParentItem
 import com.sajjadio.clothing_suggester.utils.mapStringToBitmap
 import com.sajjadio.clothing_suggester.utils.mapUriToString
+import com.vmadalin.easypermissions.BuildConfig
 import com.vmadalin.easypermissions.EasyPermissions
 
 class HomeActivity : AppCompatActivity(), WeatherView, OnItemClickListener {
@@ -57,6 +58,7 @@ class HomeActivity : AppCompatActivity(), WeatherView, OnItemClickListener {
         setContentView(binding.root)
         setupSwipeRefresh()
         setup()
+
     }
 
     private fun setupSwipeRefresh() {

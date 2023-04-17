@@ -2,6 +2,7 @@ package com.sajjadio.clothing_suggester.data.remote
 
 import android.util.Log
 import com.google.gson.Gson
+import com.sajjadio.clothing_suggester.BuildConfig
 import com.sajjadio.clothing_suggester.data.model.WeatherResponse
 import okhttp3.*
 import java.io.IOException
@@ -85,7 +86,7 @@ class ApiServiceImpl : ApiService {
             .addQueryParameter(APP_ID, API_KEY)
             .addQueryParameter(LAN, LATITUDE)
             .addQueryParameter(LON, LONGITUDE)
-            .addQueryParameter(HOURLY, EXCLUDE)
+            .addQueryParameter(EXCLUDE, HOURLY)
             .build()
     }
 
@@ -97,15 +98,15 @@ class ApiServiceImpl : ApiService {
 
     private companion object {
         const val TAG = "sajjadio"
-        const val API_KEY = "8a28304434cc3379ceb50bfe875b6602"
+        const val API_KEY =  BuildConfig.API_KEY
         const val LATITUDE = "30.5257657"
         const val LONGITUDE = "47.773797"
         const val LAN = "lat"
         const val LON = "lot"
-        const val APP_ID = "lot"
-        const val EXCLUDE = "hourly"
+        const val APP_ID = "appid"
+        const val EXCLUDE = "exclude"
         const val HOURLY = "hourly"
-        const val SCHEME = "scheme"
+        const val SCHEME = "https"
         const val HOST = "api.openweathermap.org"
         const val PATH_SEGMENTS_DAILY = "data/2.5/onecall"
         const val PATH_SEGMENTS_CURRENT = "data/2.5/weather"
